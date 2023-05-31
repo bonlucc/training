@@ -7,7 +7,7 @@ import org.springframework.context.annotation.Configuration;
 import com.zaxxer.hikari.HikariDataSource;
 @Configuration
 public class PostgresDataSource {
-
+    /*
     @Bean
     @ConfigurationProperties("app.datasource")
     public HikariDataSource hikariDataSource() {
@@ -15,5 +15,5 @@ public class PostgresDataSource {
                 .create()
                 .type(HikariDataSource.class)
                 .build();
-    }
+    }*/
 }
