@@ -1,6 +1,64 @@
-app:
+server:
+  port: 8082
+
+spring:
+  profiles:
+    active: dev
+
+---
+
+spring:
+  profiles: dev
   datasource:
-    jdbc-url: jdbc:postgresql://localhost:5432/spring-boot-postgres-jdbc
-    username: postgres
+    driverClassName: org.h2.Driver
     password: password
-    pool-size: 30
+    url: jdbc:h2:mem:dcbapp
+    username: sa
+  h2:
+    console:
+      enabled: true
+  jpa:
+    database-platform: org.hibernate.dialect.H2Dialect
+    show-sql: true
+welcome:
+  message: Welcome!
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+
+---
+
+spring:
+  profiles: qa
+  datasource:
+    driverClassName: org.h2.Driver
+    password: password
+    url: jdbc:h2:mem:dcbapp
+    username: sa
+  h2:
+    console:
+      enabled: true
+  jpa:
+    database-platform: org.hibernate.dialect.H2Dialect
+    show-sql: true
+welcome:
+  message: Welcome!
+---
+
+spring:
+  profiles: prod
+  datasource:
+    driverClassName: org.h2.Driver
+    password: password
+    url: jdbc:h2:mem:dcbapp
+    username: sa
+  h2:
+    console:
+      enabled: true
+  jpa:
+    database-platform: org.hibernate.dialect.H2Dialect
+    show-sql: true
+welcome:
+  message: Welcome!

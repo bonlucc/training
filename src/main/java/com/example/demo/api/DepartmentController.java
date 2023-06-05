@@ -1,5 +1,6 @@
 package com.example.demo.api;
 
+import com.example.demo.error.DepartmentNotFoundException;
 import com.example.demo.model.Department;
 import com.example.demo.service.DepartmentService;
 import org.slf4j.Logger;
@@ -11,7 +12,6 @@ import javax.validation.Valid;
 import java.util.List;
 
 
-@RequestMapping("/")
 @RestController
 public class DepartmentController {
 
@@ -33,7 +33,7 @@ public class DepartmentController {
     }
 
     @GetMapping("/departments/{id}")
-    public Department getDepartmentById(@PathVariable("id") long id) {
+    public Department getDepartmentById(@PathVariable("id") long id) throws DepartmentNotFoundException {
         LOGGER.info("Inside getDepartmentById of DepartmentController");
         return departmentService.getDepartmentById(id);
     }
@@ -45,7 +45,7 @@ public class DepartmentController {
     }
 
     @PutMapping("/departments/{id}")
-    public Department updateDepartment(@RequestBody Department department, @PathVariable("id") long id){
+    public Department updateDepartment(@RequestBody Department department, @PathVariable("id") long id) throws DepartmentNotFoundException {
         LOGGER.info("Inside updateDepartment of DepartmentController");
         return departmentService.updateDepartment(department, id);
     }
