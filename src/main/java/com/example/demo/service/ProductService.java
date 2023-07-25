@@ -8,6 +8,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Objects;
 
 @Service
 public class ProductService {
@@ -42,9 +43,26 @@ public class ProductService {
                 product5 = Product.builder()
                         .productName("ProductName5")
                         .otherData("ProductType5")
+                        .build(),
+                product6 = Product.builder()
+                        .productName("ProductName6")
+                        .otherData("ProductType6")
+                        .build(),
+                product7 = Product.builder()
+                        .productName("ProductName7")
+                        .otherData("ProductType7")
+                        .build(),
+                product8 = Product.builder()
+                        .productName("ProductName8")
+                        .otherData("ProductType8")
+                        .build(),
+                product9 = Product.builder()
+                        .productName("ProductName9")
+                        .otherData("ProductType9")
                         .build();
 
-        List<Product> products = List.of(product1, product2, product3, product4, product5);
+        List<Product> products = List.of(product1, product2, product3, product4, product5,
+                                         product6, product7, product8, product9);
         productRepository.saveAll(products);
     }
     public List<Product> getAllProducts() {
@@ -69,8 +87,8 @@ public class ProductService {
 
     public void updateProduct(ProductModel productModel, Long id){
         Product product = productRepository.getReferenceById(id);
-        product.setProductName(product.getProductName());
-        product.setOtherData(productModel.getOtherData());
+        if(!Objects.equals(productModel.getProductName(), "")) product.setProductName(productModel.getProductName());
+        if(!Objects.equals(productModel.getOtherData(), "")) product.setOtherData(productModel.getOtherData());
         productRepository.save(product);
 
     }

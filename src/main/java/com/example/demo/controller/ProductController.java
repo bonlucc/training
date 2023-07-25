@@ -6,7 +6,6 @@ import com.example.demo.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import java.awt.print.Pageable;
 import java.util.List;
 
 @RestController
@@ -23,6 +22,7 @@ public class ProductController {
     }
     @GetMapping("/read/{id}")
     public Product getProduct(@PathVariable Long id){
+        productService.initialize();
         return productService.getProduct(id);
     }
 
@@ -34,15 +34,19 @@ public class ProductController {
 
     @PostMapping("/create")
     public void createProduct(@RequestBody ProductModel productModel){
+        productService.initialize();
         productService.saveProduct(productModel);
     }
 
     @DeleteMapping("/delete/{id}")
     public void deleteProduct(@PathVariable Long id){
+        productService.initialize();
         productService.deleteProduct(id);
     }
     @PutMapping("/update/{id}")
     public void updateProduct(@PathVariable Long id, @RequestBody ProductModel productModel){
+        productService.initialize();
         productService.updateProduct(productModel, id);
     }
+
 }

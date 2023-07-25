@@ -11,7 +11,7 @@ export default function MainProduct() {
     function sAccess(event) {
         const elementAccess = event.target.name
         setAccess( prevState => {
-           return prevState === AccessType.NO ? elementAccess : AccessType.NO
+           return prevState === elementAccess ? AccessType.NO : elementAccess
         })
 
     }

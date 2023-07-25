@@ -2,6 +2,7 @@ import React from "react"
 
 export default function Main() {
     const prodPage = "http://localhost:8080/product"
+
     return (
         <main>
             <h1>Welcome</h1>

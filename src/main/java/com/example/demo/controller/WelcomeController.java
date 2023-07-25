@@ -1,16 +1,29 @@
 package com.example.demo.controller;
 
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.ModelAndView;
 
-@Controller
+@RestController
 public class WelcomeController {
+
+    @RequestMapping("/login")
+    public ModelAndView loginPage(){
+        ModelAndView modelAndView = new ModelAndView();
+        modelAndView.setViewName("login.html");
+        return modelAndView;
+    }
+
     @RequestMapping("/welcome")
-    public String welcome(){
-        return "index.html";
+    public ModelAndView welcome(){
+        ModelAndView modelAndView = new ModelAndView();
+        modelAndView.setViewName("index.html");
+        return modelAndView;
     }
     @RequestMapping("/product")
-    public String productPage(){
-        return "product.html";
+    public ModelAndView productPage(){
+        ModelAndView modelAndView = new ModelAndView();
+        modelAndView.setViewName("product.html");
+        return modelAndView;
     }
 }
