@@ -1,0 +1,28 @@
+html{
+    height: 100%;
+}
+body {
+    margin: 0;
+    height: 100%;
+    background: linear-gradient(darkseagreen, white) no-repeat;
+
+
+}
+
+main{
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+}
+
+.login-div{
+    background-color: palegoldenrod;
+    margin-top: 5%;
+    border-radius: 5px;
+    width: 500px;
+    height: 250px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 3px 3px 5px black;
+}

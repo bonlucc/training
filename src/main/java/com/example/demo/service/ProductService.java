@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
+import javax.validation.constraints.NotNull;
 import java.util.List;
 import java.util.Objects;
 
@@ -73,12 +74,16 @@ public class ProductService {
         return productRepository.getReferenceById(id);
     }
 
-    public void saveProduct(ProductModel productModel){
-        Product product = Product.builder()
-                .productName(productModel.getProductName())
-                .otherData(productModel.getOtherData())
-                .build();
-        productRepository.save(product);
+    public void saveProduct(@NotNull ProductModel productModel){
+        if (!productModel.getOtherData().isEmpty() && !productModel.getProductName().isEmpty()) {
+            Product product = Product.builder()
+                    .productName(productModel.getProductName())
+                    .otherData(productModel.getOtherData())
+                    .build();
+
+            productRepository.save(product);
+        }
+
     }
 
     public void deleteProduct(Long id){

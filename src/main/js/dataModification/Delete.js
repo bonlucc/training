@@ -21,7 +21,7 @@ export default function Delete(){
         }).then(resp => {
             return resp.status
         })
-            .then(resp => resp === 401 ? setLoginError(true) : window.alert("Successful"))
+            .then(resp => resp >= 401 && resp < 500 ? setLoginError(true) : window.alert("Successful"))
     }
 
     return(

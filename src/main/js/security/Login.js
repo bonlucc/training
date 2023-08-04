@@ -50,7 +50,7 @@ export default function Login(props){
             })
     }
 
-    return(<div>
+    return(<div className="login-div">
             {loginError && <p style={{color: "red"}}>Invalid Login</p>}
         <form onSubmit={handleFormSubmit}>
             <input

@@ -1,7 +1,9 @@
 import React from "react"
-import Crud from "./dataModification/Crud"
 import {AccessType} from "./AccessType";
-
+import Create from "./dataModification/Create"
+import Read from "./dataModification/Read"
+import Update from "./dataModification/Update"
+import Delete from  "./dataModification/Delete"
 export default function MainProduct() {
 
 
@@ -11,13 +13,13 @@ export default function MainProduct() {
     function sAccess(event) {
         const elementAccess = event.target.name
         setAccess( prevState => {
-           return prevState === elementAccess ? AccessType.NO : elementAccess
+            return prevState === elementAccess ? AccessType.NO : elementAccess
         })
 
     }
 
     //const productsElements = products.map(product =>
-        //<div><h2>{product.productName}</h2><h2>{product.otherData}</h2></div>)
+    //<div><h2>{product.productName}</h2><h2>{product.otherData}</h2></div>)
 
     return (
         <main>
@@ -25,7 +27,10 @@ export default function MainProduct() {
             <button name={AccessType.READ} onClick={sAccess}>Read</button>
             <button name={AccessType.UPDATE} onClick={sAccess}>Update</button>
             <button name={AccessType.DELETE} onClick={sAccess}>Delete</button>
-            <Crud access={access} />
+            {access === AccessType.READ && <Read />}
+            {access === AccessType.CREATE && <Create />}
+            {access === AccessType.UPDATE && <Update />}
+            {access === AccessType.DELETE && <Delete />}
 
         </main>
     )

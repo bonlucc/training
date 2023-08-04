@@ -14,10 +14,12 @@ export default function Read(){
         size: 5
     })
 
+    const [total, setTotal] = React.useState(0)
+
     const tableStyle = {borderStyle: "solid", borderColor: "black"}
     React.useEffect(
         ()=> {
-            fetch("http://localhost:8080/product/api/readPage?page=" + table.page + "&size=" + table.size, {
+            fetch("http://localhost:8080/product/api/read/Page?page=" + table.page + "&size=" + table.size, {
                 headers: {
                     "authorization": "Bearer " + localStorage.getItem('token')
                 }
@@ -25,7 +27,17 @@ export default function Read(){
                 .then(resp => {
                     return resp.status === 200 ? resp.json() : resp.status
                 })
-                .then(resp => resp === 401 ? setLoginError(true) : setProducts(resp))
+                .then(resp => resp >= 401 && resp < 500 ? setLoginError(true) : setProducts(resp))
+
+            fetch("http://localhost:8080/product/api/read/total", {
+                headers: {
+                    "authorization": "Bearer " + localStorage.getItem('token')
+                }
+            })
+                .then(resp => {
+                    return resp.status === 200 ? resp.text() : resp.status
+                })
+                .then(resp => resp >= 401 && resp < 500 ? setLoginError(true) : setTotal(resp))
         }, [table])
 
     const tableData = products.map( product =>
@@ -36,7 +48,7 @@ export default function Read(){
         const direction = event.target.name
         setTable(prevState => {
             return {
-                ...table,
+                ...prevState,
                 page: direction === "right" ? prevState.page + 1 : prevState.page - 1
             }
         })
@@ -56,7 +68,7 @@ export default function Read(){
             </table>
             }
             {table.page > 0 && <button name="left"  onClick={pageChange} > &#8592; </button>}
-            {table.page <= (products.length / table.size)  && <button name="right" onClick={pageChange} > &#8594; </button>}
+            {table.page + 1 < (total / table.size) && <button name="right" onClick={pageChange} > &#8594; </button>}
         </div>
     )
 }

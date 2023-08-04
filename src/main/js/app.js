@@ -3,6 +3,7 @@ import { createRoot } from "react-dom/client"
 import Main from "./Main"
 import MainProduct from "./MainProduct"
 import MainLogin from "./MainLogin"
+import MainAdmin from "./MainAdmin"
 import client from "./client"
 
 let container
@@ -19,6 +20,12 @@ switch (window.location.pathname.split("/").pop()){
         container = document.getElementById("reactLogin")
         root = createRoot(container)
         root.render(<MainLogin />)
+        break
+
+    case "admin":
+        container = document.getElementById("reactAdmin")
+        root = createRoot(container)
+        root.render(<MainAdmin />)
         break
 
     default:

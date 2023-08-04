@@ -42,28 +42,28 @@ export default function Create(){
     }
 
     return (<div>
-        <h1>Create Operation</h1>
+            <h1>Create Operation</h1>
             {createError && <p style={{color: "red"}}>Null fields are not allowed</p>}
-        {loginError ?
-            <a href="http://localhost:8080/login" style={{color: "red"}}>Invalid Login</a>
-            :
-        <form onSubmit={handleSubmit}>
-            <input
-            type="text"
-            placeholder="Product Name"
-            value={products.productName}
-            onChange={handleChange}
-            name="productName"
-            />
-            <input
-                type="text"
-                placeholder="Other Data"
-                value={products.otherData}
-                onChange={handleChange}
-                name="otherData"
-            />
-            <button>Submit</button>
-        </form>}
+            {loginError ?
+                <a href="http://localhost:8080/login" style={{color: "red"}}>Invalid Login</a>
+                :
+                <form onSubmit={handleSubmit}>
+                    <input
+                        type="text"
+                        placeholder="Product Name"
+                        value={products.productName}
+                        onChange={handleChange}
+                        name="productName"
+                    />
+                    <input
+                        type="text"
+                        placeholder="Other Data"
+                        value={products.otherData}
+                        onChange={handleChange}
+                        name="otherData"
+                    />
+                    <button>Submit</button>
+                </form>}
         </div>
     )
 }

@@ -13,6 +13,7 @@ import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
 
+@Deprecated
 public class CustomAuthenticationFailureHandler implements AuthenticationFailureHandler {
     private ObjectMapper objectMapper = new ObjectMapper();
 
