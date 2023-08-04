@@ -63,6 +63,7 @@ public class WebConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http.cors().and().csrf().disable().authorizeRequests()
+                //.antMatchers("/**").permitAll().and().headers().frameOptions().disable();;
                 .expressionHandler(hierarchyWebSecurityExpressionHandler())
                 .antMatchers(HttpMethod.POST, SIGN_UP_URL).permitAll()
                 .antMatchers("/built/**").permitAll()

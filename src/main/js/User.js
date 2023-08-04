@@ -2,7 +2,7 @@ import React from "react"
 import {AccessType} from "./AccessType";
 import Crud from "./dataModification/Crud"
 
-export default function MainAdmin(){
+export default function User({setLoginError}){
     const [userList, setUserList] = React.useState([{
         id: 0,
         username: "",
@@ -18,6 +18,13 @@ export default function MainAdmin(){
             ]
         }]
     }])
+
+    const [userCreate, setUserCreate] = React.useState({
+        username: "",
+        email: "",
+        password: "",
+        roles: ["ROLE_USER"]
+    })
 
     const [roleList, setRoleList]= React.useState([{
         name: "",
@@ -61,7 +68,6 @@ export default function MainAdmin(){
     function checkNull(){
         return userCreate.email === "" || userCreate.password === "" || userCreate.username === ""
     }
-    const [loginError, setLoginError] = React.useState(false)
 
     const [table, setTable] = React.useState({
         page: 0,
@@ -164,9 +170,6 @@ export default function MainAdmin(){
                 page: direction === "right" ? prevState.page + 1 : prevState.page - 1
             }
         })
-    }
-    if(loginError){
-        window.location.href = "http://localhost:8080/login"
     }
 
     return (
