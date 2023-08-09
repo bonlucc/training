@@ -79,7 +79,7 @@ export default function User({setLoginError}){
     const tableStyle = {borderStyle: "solid", borderColor: "black"}
     React.useEffect(
         ()=> {
-            fetch("http://localhost:8080/api/user/management/Page?page=" + table.page + "&size=" + table.size, {
+            fetch("http://localhost:8080/api/user/read/Page?page=" + table.page + "&size=" + table.size, {
                 headers: {
                     "authorization": "Bearer " + localStorage.getItem('token')
                 }
@@ -89,7 +89,7 @@ export default function User({setLoginError}){
                 })
                 .then(resp => resp >= 401 && resp < 500 ? setLoginError(true) : setUserList(resp))
 
-            fetch("http://localhost:8080/api/user/management/total", {
+            fetch("http://localhost:8080/api/user/read/total", {
                 headers: {
                     "authorization": "Bearer " + localStorage.getItem('token')
                 }
@@ -102,7 +102,7 @@ export default function User({setLoginError}){
 
     React.useEffect( () => {
 
-        fetch("http://localhost:8080/api/roles/all", {
+        fetch("http://localhost:8080/api/roles/read/all", {
             headers: {
                 "authorization": "Bearer " + localStorage.getItem('token')
             }
@@ -136,29 +136,23 @@ export default function User({setLoginError}){
             value: userCreate.roles,
             multiple:true,
             options:roleList.map(item =>
-            {return {value: item.name, name:setGroup(item.name)}})}}
+            {return {value: item.name, name:`${setGroup(item.name)}`.toLowerCase()}})}}
 
 
     const userTableData = userList.map( user =>
         <tr key={user.id}>
             <td style={tableStyle}>{user.username}</td>
             <td style={tableStyle}>{user.email}</td>
-            <td style={tableStyle}>{user.roles.map(role => `|${setGroup(role.name)}`)}</td>
+            <td style={tableStyle}>{user.roles.map(role => `|${setGroup(role.name)}`.toLowerCase())}</td>
         </tr>)
 
 
 
     function setGroup(role) {
-        switch (role) {
-            case "ROLE_ADMIN":
-                return "Administrator"
-            case "ROLE_STAFF":
-                return "Staff Member"
-            case "ROLE_USER":
-                return "User"
-            default:
-                return role
+        if(role === undefined || role === null){
+            return null
         }
+        return role.split("_")[1]
     }
 
 
@@ -174,14 +168,13 @@ export default function User({setLoginError}){
 
     return (
         <div>
-
                 <div>
                     <h1>Users</h1>
                     <button name={AccessType.CREATE} onClick={sAccess}>Create</button>
                     <button name={AccessType.UPDATE} onClick={sAccess}>Update</button>
                     <button name={AccessType.DELETE} onClick={sAccess}>Delete</button>
-                    {access !== AccessType.NO && <Crud subject={userCreate} api={"http://localhost:8080/api/user"} checkNull={checkNull()}
-                                                       inputParams={inputParams} handleChange={(event) => handleChange(event)} />}
+                    {access !== AccessType.NO && <Crud subject={userCreate} api={"http://localhost:8080/api/user/create"} apiComplement={""} checkNull={checkNull}
+                                                       inputParams={inputParams} handleChange={(event) => handleChange(event)} access={AccessType.CREATE}/>}
 
                     <table style={{borderStyle: "solid", borderColor: "black", width: "100%"}}>
                         <tbody>
@@ -192,8 +185,6 @@ export default function User({setLoginError}){
                     {table.page > 0 && <button name="left"  onClick={pageChange} > &#8592; </button>}
                     {table.page + 1 < (total / table.size) && <button name="right" onClick={pageChange} > &#8594; </button>}
                 </div>
-
-
         </div>
     )
 

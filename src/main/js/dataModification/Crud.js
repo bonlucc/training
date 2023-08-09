@@ -1,27 +1,35 @@
 import React from "react"
+import {AccessType} from "../AccessType";
 
-export default function Create({subject, checkNull, api, inputParams, handleChange}){
+export default function Create({subject, checkNull, api, apiComplement, inputParams, handleChange, access}){
 
     const [loginError, setLoginError] = React.useState(false)
     const [createError, setCreateError] = React.useState(false)
 
+    function init(){
+       return subject === null ? {
+            method: getMethod(access),
+            headers: {"authorization" : "Bearer " + localStorage.getItem("token")}
+        } : {
+           method: getMethod(access),
+           body: JSON.stringify(subject),
+           headers: {
+               "Content-type": "application/json; charset=UTF-8",
+               "authorization" : "Bearer " + localStorage.getItem("token")
+           }
+       }
+    }
+
     function handleSubmit(event){
         event.preventDefault()
-        if(checkNull){
+        if(checkNull()){
             setCreateError(true)
             return
         }
-        fetch(api, {
-            method: "POST",
-            body: JSON.stringify(subject),
-            headers: {
-                "Content-type": "application/json; charset=UTF-8",
-                "authorization" : "Bearer " + localStorage.getItem("token")
-            }
-        }).then(resp => {
+        fetch(api + apiComplement, init()).then(resp => {
             return resp.status
         })
-            .then(resp => resp >= 401 && resp < 500 ? setLoginError(true) : window.alert("Successful"))
+            .then(resp => resp >= 400 && resp < 500 ? setLoginError(true) : window.alert("Successful"))
         setCreateError(false)
 
     }
@@ -47,8 +55,20 @@ export default function Create({subject, checkNull, api, inputParams, handleChan
         </label>
     }
 
+    function getMethod(access){
+        switch (access) {
+            case AccessType.CREATE:
+                return "POST"
+            case AccessType.READ:
+                return "GET"
+            case AccessType.UPDATE:
+                return "PUT"
+            case AccessType.DELETE:
+                return "DELETE"
+
+        }
+    }
     return (<div>
-            <h1>Create Operation</h1>
             {createError && <p style={{color: "red"}}>Null fields are not allowed</p>}
             {loginError ?
                 <a href="http://localhost:8080/login" style={{color: "red"}}>Invalid Login</a>

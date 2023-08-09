@@ -1,7 +1,6 @@
 package com.example.demo.service;
 
 import com.example.demo.entity.AUser;
-import com.example.demo.entity.Product;
 import com.example.demo.entity.Role;
 import com.example.demo.model.UserModel;
 import com.example.demo.repository.RoleRepository;
@@ -28,7 +27,9 @@ public class UserService {
     private RoleRepository roleRepository;
     public AUser register(@NotNull UserModel userModel) {
         Collection<Role> roles = new ArrayList<>();
-        if(userModel.getRoles().isEmpty()) {roles.add(roleRepository.findByName("ROLE_USER"));}
+        if(userModel.getRoles().isEmpty()) {
+            roles.add(roleRepository.findByName("ROLE_USER"));
+        }
         else{
             for (String role : userModel.getRoles()) {
                 roles.add(roleRepository.findByName(role));
@@ -39,6 +40,7 @@ public class UserService {
                 .password(passwordEncoder.encode(userModel.getPassword()))
                 .email(userModel.getEmail())
                 .roles(roles)
+                .enabled(true)
                 .build();
 
         return userRepository.save(user);

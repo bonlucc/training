@@ -4,13 +4,14 @@ export default function Register(props){
     const [formData, setFormData] = React.useState({
         username: "",
         password: "",
-        email: ""
+        email: "",
+        roles: ["ROLE_USER"]
     })
 
     function handleSubmit(event) {
         event.preventDefault()
 
-        fetch("http://localhost:8080/api/user",{
+        fetch("http://localhost:8080/api/user/create",{
             method: "POST",
             body: JSON.stringify(formData),
             headers: {

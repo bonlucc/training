@@ -4,7 +4,6 @@ import com.example.demo.security.CustomAuthenticationFailureHandler;
 import com.example.demo.security.JWTAuthenticationFilter;
 import com.example.demo.security.JWTAuthorizationFilter;
 import com.example.demo.service.UserDetailsServiceImpl;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -12,25 +11,20 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.hierarchicalroles.RoleHierarchy;
 import org.springframework.security.access.hierarchicalroles.RoleHierarchyImpl;
-import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.access.expression.DefaultWebSecurityExpressionHandler;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.HttpStatusEntryPoint;
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-
-import javax.annotation.Resource;
 
 import static com.example.demo.security.SecurityConstants.LOGIN_URL;
 import static com.example.demo.security.SecurityConstants.SIGN_UP_URL;
@@ -66,16 +60,30 @@ public class WebConfig extends WebSecurityConfigurerAdapter {
                 //.antMatchers("/**").permitAll().and().headers().frameOptions().disable();;
                 .expressionHandler(hierarchyWebSecurityExpressionHandler())
                 .antMatchers(HttpMethod.POST, SIGN_UP_URL).permitAll()
+                //.antMatchers("/api/user/create").hasAuthority("appUser_WRITE")
+                .antMatchers("/api/user/read/**").hasAuthority("appUser_READ")
+                .antMatchers("/api/user/delete/**").hasAuthority("appUser_DELETE")
+                .antMatchers("/api/user/update/**").hasAuthority("appUser_DELETE")
+                .antMatchers("/api/roles/create").hasAuthority("appRoles_WRITE")
+                .antMatchers("/api/roles/read/**").hasAuthority("appRoles_READ")
+                .antMatchers("/api/roles/delete/**").hasAuthority("appRoles_DELETE")
+                .antMatchers("/api/roles/update/**").hasAuthority("appRoles_DELETE")
+                .antMatchers("/api/privileges/create").hasAuthority("appPrivileges_WRITE")
+                .antMatchers("/api/privileges/read/**").hasAuthority("appPrivileges_READ")
+                .antMatchers("/api/privileges/delete/**").hasAuthority("appPrivileges_DELETE")
+                .antMatchers("/api/privileges/update/**").hasAuthority("appPrivileges_DELETE")
+                //.antMatchers("/api/roles/**").hasRole("ADMIN")
+                //.antMatchers("/api/privileges/**").hasRole("ADMIN")
                 .antMatchers("/built/**").permitAll()
                 .antMatchers("/favicon.ico").permitAll()
                 .antMatchers("/welcome").permitAll()
                 .antMatchers("/product").permitAll()
                 .antMatchers("/admin").permitAll()
-                .antMatchers("/products").hasRole("USER")
-                .antMatchers("/product/api/read/**").hasAuthority("READ_PRIVILEGE")
-                .antMatchers("/product/api/update/**").hasAnyAuthority("DELETE_PRIVILEGE", "WRITE_PRIVILEGE")
-                .antMatchers("/product/api/delete/**").hasAuthority("DELETE_PRIVILEGE")
-                .antMatchers("/product/api/create").hasAuthority("WRITE_PRIVILEGE")
+                .antMatchers("/products").permitAll()
+                .antMatchers("/product/api/read/**").hasAuthority("appProd_READ")
+                .antMatchers("/product/api/update/**").hasAnyAuthority("appProd_DELETE", "appProd_WRITE")
+                .antMatchers("/product/api/delete/**").hasAuthority("appProd_DELETE")
+                .antMatchers("/product/api/create").hasAuthority("appProd_WRITE")
                 .anyRequest().authenticated()
                 .and()
                 .formLogin()

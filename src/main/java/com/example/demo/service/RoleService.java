@@ -33,9 +33,23 @@ public class RoleService {
             privileges.add(privilegeRepository.findByName(role));
         }
         Role role = Role.builder()
-                .name(roleModel.getName())
+                .name("ROLE_" + roleModel.getName().toUpperCase())
                 .privileges(privileges)
                 .build();
+        roleRepository.save(role);
+    }
+
+    public Role getRoleById(Long id) {
+        return roleRepository.findById(id).orElseThrow();
+    }
+
+    public void updateRole(RoleModel roleModel, Long id) {
+        List<Privilege> privileges = new ArrayList<>();
+        for(String privilege : roleModel.getPrivileges()){
+            privileges.add(privilegeRepository.findByName(privilege));
+        }
+        Role role = roleRepository.findById(id).orElseThrow();
+        role.setPrivileges(privileges);
         roleRepository.save(role);
     }
 }

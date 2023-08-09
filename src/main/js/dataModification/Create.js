@@ -36,7 +36,7 @@ export default function Create(){
         }).then(resp => {
             return resp.status
         })
-            .then(resp => resp === 401 ? setLoginError(true) : window.alert("Successful"))
+            .then(resp => resp >= 400 && resp <= 500 ? setLoginError(true) : window.alert("Successful"))
         setCreateError(false)
 
     }

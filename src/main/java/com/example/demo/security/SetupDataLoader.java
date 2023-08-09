@@ -8,7 +8,6 @@ import com.example.demo.repository.RoleRepository;
 import com.example.demo.repository.UserRepository;
 import com.example.demo.service.ProductService;
 import lombok.extern.slf4j.Slf4j;
-import org.aspectj.apache.bcel.ConstantsInitializer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
@@ -16,6 +15,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import javax.transaction.Transactional;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
@@ -53,14 +53,34 @@ public class SetupDataLoader implements
         productService.initialize();
 
         Privilege readPrivilege
-                = createPrivilegeIfNotFound("READ_PRIVILEGE");
+                = createPrivilegeIfNotFound("appProd_READ");
         Privilege writePrivilege
-                = createPrivilegeIfNotFound("WRITE_PRIVILEGE");
+                = createPrivilegeIfNotFound("appProd_WRITE");
         Privilege deletePrivilege
-                = createPrivilegeIfNotFound("DELETE_PRIVILEGE");
+                = createPrivilegeIfNotFound("appProd_DELETE");
 
-        List<Privilege> adminPrivileges = Arrays.asList(
-                readPrivilege, writePrivilege, deletePrivilege);
+        List<Privilege> adminPrivileges = new ArrayList<>();
+        adminPrivileges.add(readPrivilege);
+        adminPrivileges.add(writePrivilege);
+        adminPrivileges.add(deletePrivilege);
+
+        Privilege setupPrivilege;
+        List<String> primitivePrivileges = Arrays.asList(
+                "appUser_WRITE",
+                "appUser_READ",
+                "appUser_DELETE",
+                "appRoles_WRITE",
+                "appRoles_READ",
+                "appRoles_DELETE",
+                "appPrivileges_WRITE",
+                "appPrivileges_READ",
+                "appPrivileges_DELETE");
+
+        for(String privilege : primitivePrivileges){
+            setupPrivilege = createPrivilegeIfNotFound(privilege);
+            //log.info(String.valueOf(setupPrivilege));
+            adminPrivileges.add(setupPrivilege);
+        }
 
         createRoleIfNotFound("ROLE_ADMIN", adminPrivileges);
         createRoleIfNotFound("ROLE_STAFF", Arrays.asList(writePrivilege, readPrivilege));
@@ -122,4 +142,5 @@ public class SetupDataLoader implements
         }
         return role;
     }
+
 }
