@@ -26,6 +26,13 @@ export default function User({setLoginError}){
         roles: ["ROLE_USER"]
     })
 
+    const [userUpdate, setUserUpdate] = React.useState({
+        username: "",
+        email: "",
+        password: "",
+        roles: []
+    })
+
     const [roleList, setRoleList]= React.useState([{
         name: "",
         privileges:[
@@ -57,6 +64,19 @@ export default function User({setLoginError}){
             }})
     }
 
+    function handleChangeUpdate(event){
+        const {name, value, selectedOptions} = event.target
+        setUserUpdate(prevState => {
+            if(!name.startsWith("select")){
+                return {
+                    ...prevState,
+                    [name]:  value
+                }}else{
+                return {...prevState,
+                    roles: extractOptions(selectedOptions)}
+            }})
+    }
+
     function extractOptions(arr){
         let roles = []
         for (let i = 0; i < arr.length; i++){
@@ -67,6 +87,10 @@ export default function User({setLoginError}){
 
     function checkNull(){
         return userCreate.email === "" || userCreate.password === "" || userCreate.username === ""
+    }
+
+    function checkNullUpdate(){
+        return userUpdate.username === ""
     }
 
     const [table, setTable] = React.useState({
@@ -138,6 +162,21 @@ export default function User({setLoginError}){
             options:roleList.map(item =>
             {return {value: item.name, name:`${setGroup(item.name)}`.toLowerCase()}})}}
 
+    const inputParamsUpdate = {input: [{
+            type: "text",
+            placeholder: "Username",
+            value: userUpdate.username,
+            name: "username"
+        }
+        ],select: {
+            active: true,
+            label:"Roles",
+            name:"selectRoles",
+            value: userUpdate.roles,
+            multiple:true,
+            options:roleList.map(item =>
+            {return {value: item.name, name:`${setGroup(item.name)}`.toLowerCase()}})}}
+
 
     const userTableData = userList.map( user =>
         <tr key={user.id}>
@@ -146,15 +185,12 @@ export default function User({setLoginError}){
             <td style={tableStyle}>{user.roles.map(role => `|${setGroup(role.name)}`.toLowerCase())}</td>
         </tr>)
 
-
-
     function setGroup(role) {
         if(role === undefined || role === null){
             return null
         }
         return role.split("_")[1]
     }
-
 
     function pageChange(event){
         const direction = event.target.name
@@ -173,8 +209,11 @@ export default function User({setLoginError}){
                     <button name={AccessType.CREATE} onClick={sAccess}>Create</button>
                     <button name={AccessType.UPDATE} onClick={sAccess}>Update</button>
                     <button name={AccessType.DELETE} onClick={sAccess}>Delete</button>
-                    {access !== AccessType.NO && <Crud subject={userCreate} api={"http://localhost:8080/api/user/create"} apiComplement={""} checkNull={checkNull}
-                                                       inputParams={inputParams} handleChange={(event) => handleChange(event)} access={AccessType.CREATE}/>}
+                    {access === AccessType.CREATE && <Crud subject={userCreate} api={"http://localhost:8080/api/user/create"} apiComplement={""} checkNull={checkNull}
+                                                       inputParams={inputParams} handleChange={(event) => handleChange(event)} access={access}/>}
+
+                    {access === AccessType.UPDATE && <Crud subject={userUpdate} api={"http://localhost:8080/api/user/update/"} apiComplement={userUpdate.username} checkNull={checkNullUpdate}
+                                                    /*TEST THIS ----->    */       inputParams={inputParamsUpdate} handleChange={(event) => handleChangeUpdate(event)} access={access}/>}
 
                     <table style={{borderStyle: "solid", borderColor: "black", width: "100%"}}>
                         <tbody>
@@ -187,8 +226,5 @@ export default function User({setLoginError}){
                 </div>
         </div>
     )
-
-
-
 
 }

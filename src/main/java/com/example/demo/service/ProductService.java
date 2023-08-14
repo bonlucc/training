@@ -1,6 +1,7 @@
 package com.example.demo.service;
 
 import com.example.demo.entity.Product;
+import com.example.demo.error.ResourceNotFoundException;
 import com.example.demo.model.ProductModel;
 import com.example.demo.repository.ProductRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -90,8 +91,9 @@ public class ProductService {
         productRepository.deleteById(id);
     }
 
-    public void updateProduct(ProductModel productModel, Long id){
-        Product product = productRepository.getReferenceById(id);
+    public void updateProduct(ProductModel productModel, Long id) throws ResourceNotFoundException {
+        if(productRepository.findById(id).isEmpty()) throw new ResourceNotFoundException("Product Not Found");
+        Product product = productRepository.findById(id).get();
         if(!Objects.equals(productModel.getProductName(), "")) product.setProductName(productModel.getProductName());
         if(!Objects.equals(productModel.getOtherData(), "")) product.setOtherData(productModel.getOtherData());
         productRepository.save(product);

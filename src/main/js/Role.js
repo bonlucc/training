@@ -25,7 +25,7 @@ export default function Role({setLoginError}){
         name:""
     }])
 
-    const [roleId, setRoleId] = React.useState(0)
+    const [roleName, setRoleName] = React.useState("")
 
 
     const tableStyle = {borderStyle: "solid", borderColor: "black"}
@@ -53,10 +53,7 @@ export default function Role({setLoginError}){
 
     }
     React.useEffect( () => fetchPrivileges(), [])
-    function handleChangeId(event){
-        const {value} = event.target
-        setRoleId(value)
-    }
+
     function extractOptions(arr){
         let roles = []
         for (let i = 0; i < arr.length; i++){
@@ -91,11 +88,6 @@ export default function Role({setLoginError}){
             value: roleCreate.privileges,
             multiple: true,
             options: [{value:"appProd_READ", name: "Read"}, {value:"appProd_WRITE", name:"Write"}, {value:"appProd_DELETE", name:"Delete"}]}}
-
-
-    function setAuth(auth) {
-        return "ROLE_" + auth.toUpperCase()
-    }
 
     function getAppNames(privilegeList){
         let appNames = []
@@ -149,12 +141,15 @@ export default function Role({setLoginError}){
             "Content-type": "application/json; charset=UTF-8",
                 "authorization" : "Bearer " + localStorage.getItem("token")
             }
-        }).then(resp => {
-            return resp.status
-        })
-            .then(resp => resp >= 400 && resp < 500 ? setLoginError(true) : window.alert("Successful"))
-
+        }).then(resp => resp.status === 200 || resp.status === 404 ? resp.json() : resp.status)
+            .then(resp => {
+                if(resp >= 400 && resp < 500) return setLoginError(true)
+                if(resp.message === undefined) return setRole(resp)
+                window.alert(resp.message)
+            })
     }
+
+
 
     function getPrivileges(formJson){
         console.log(JSON.stringify(formJson))
@@ -174,12 +169,16 @@ export default function Role({setLoginError}){
     function handleSubmit(event){
         event.preventDefault()
         fetchPrivileges()
-        fetch("http://localhost:8080/api/roles/read/" + roleId, {
+        fetch("http://localhost:8080/api/roles/read/" + "ROLE_" + `${roleName}`.toUpperCase(), {
             headers: {
                 "authorization": "Bearer " + localStorage.getItem('token')
             }
-        }).then(resp => resp.status === 200 ? resp.json() : resp.status)
-            .then(resp => resp >= 400 && resp < 500 ? setLoginError(true) : setRole(resp))
+        }).then(resp => resp.status === 200 || resp.status === 404 ? resp.json() : resp.status)
+            .then(resp => {
+                if(resp >= 400 && resp < 500) return setLoginError(true)
+                if(resp.message === undefined) return setRole(resp)
+                window.alert(resp.message)
+            })
 
     }
     return (
@@ -192,11 +191,10 @@ export default function Role({setLoginError}){
             <h2>Role Management</h2>
             {role.name === "" && <form onSubmit={handleSubmit}>
                 <input
-                    type={"number"}
-                    placeholder={"roleId"}
-                    value= {roleId}
-                    onChange={(event) => handleChangeId(event)}
-                    name={"roleId"}
+                    type={"text"}
+                    placeholder={"Role Name"}
+                    value= {roleName}
+                    onChange={(event) => setRoleName(event.target.value)}
                 />
                 <button>Get privileges</button>
             </form>}
@@ -208,8 +206,4 @@ export default function Role({setLoginError}){
             </form>
         </div>
     )
-
-
-
-
 }

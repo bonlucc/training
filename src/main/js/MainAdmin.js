@@ -7,7 +7,7 @@ export default function MainAdmin(){
     const [loginError, setLoginError] = React.useState(false)
 
     //if(loginError){
-    //    window.location.href = "http://localhost:8080/login"
+    //window.location.href = "http://localhost:8080/login"
     //}
 
     return (
@@ -18,6 +18,7 @@ export default function MainAdmin(){
                 <div>
                     <User setLoginError={setLoginError}/>
                     <Role setLoginError={setLoginError}/>
+                    <a href="http://localhost:8080/welcome">Back</a>
                 </div>
             }
 

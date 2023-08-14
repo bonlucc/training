@@ -36,10 +36,19 @@ export default function Update() {
                 "authorization" : "Bearer " + localStorage.getItem("token")
             }
         }).then(resp => {
-            return resp.status
+            switch (resp.status){
+                case 401:
+                    return setLoginError(true)
+                case 403:
+                    return setLoginError(true)
+                case 404:
+                    return window.alert("Invalid Product Id")
+                case 200:
+                    return window.alert("Successful")
+                default:
+                    return window.alert("Unknown Server Error")
+            }
         })
-            .then(resp => resp >= 401 && resp < 500 ? setLoginError(true) : window.alert("Successful"))
-
     }
 
 

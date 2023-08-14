@@ -15,14 +15,10 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import javax.transaction.Transactional;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
 
 @Component
 @Transactional
-@Slf4j
 
 public class SetupDataLoader implements
         ApplicationListener<ContextRefreshedEvent> {
@@ -86,10 +82,9 @@ public class SetupDataLoader implements
         createRoleIfNotFound("ROLE_STAFF", Arrays.asList(writePrivilege, readPrivilege));
         createRoleIfNotFound("ROLE_USER", Arrays.asList(readPrivilege));
 
-        Role adminRole = roleRepository.findByName("ROLE_ADMIN");
-        Role staffRole = roleRepository.findByName("ROLE_STAFF");
-        log.info(roleRepository.findByName("ROLE_USER").toString());
-        Role userRole = roleRepository.findByName("ROLE_USER");
+        Role adminRole = roleRepository.findByName("ROLE_ADMIN").get();
+        Role staffRole = roleRepository.findByName("ROLE_STAFF").get();
+        Role userRole = roleRepository.findByName("ROLE_USER").get();
 
 
         AUser admin = new AUser();
@@ -133,14 +128,14 @@ public class SetupDataLoader implements
     //@Transactional
     Role createRoleIfNotFound(
             String name, Collection<Privilege> privileges) {
-
-        Role role = roleRepository.findByName(name);
-        if (role == null) {
+        Role role;
+        Optional<Role> optionalRole = roleRepository.findByName(name);
+        if (optionalRole.isEmpty()) {
             role = Role.builder().name(name).build();
             role.setPrivileges(privileges);
             roleRepository.save(role);
-        }
-        return role;
+            return role;
+        }else return optionalRole.get();
     }
 
 }

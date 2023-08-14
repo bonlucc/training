@@ -28,9 +28,22 @@ export default function Create({subject, checkNull, api, apiComplement, inputPar
         }
         fetch(api + apiComplement, init()).then(resp => {
             return resp.status
+        }).then(resp => {
+            switch (resp){
+                case 401:
+                    return setLoginError(true)
+                case 403:
+                    return setLoginError(true)
+                case 404:
+                    return window.alert("Requested object not found")
+                case 409:
+                    return window.alert("Requested object already exists")
+                case 200:
+                    return window.alert("Successful")
+                default:
+                    return window.alert("Unknown Server Error")
+            }
         })
-            .then(resp => resp >= 400 && resp < 500 ? setLoginError(true) : window.alert("Successful"))
-        setCreateError(false)
 
     }
 

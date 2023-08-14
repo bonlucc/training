@@ -2,6 +2,8 @@ package com.example.demo.service;
 
 import com.example.demo.entity.AUser;
 import com.example.demo.entity.Role;
+import com.example.demo.error.ResourceAlreadyExistsException;
+import com.example.demo.error.ResourceNotFoundException;
 import com.example.demo.model.UserModel;
 import com.example.demo.repository.RoleRepository;
 import com.example.demo.repository.UserRepository;
@@ -14,6 +16,7 @@ import javax.validation.constraints.NotNull;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class UserService {
@@ -25,20 +28,29 @@ public class UserService {
 
     @Autowired
     private RoleRepository roleRepository;
-    public AUser register(@NotNull UserModel userModel) {
+    public AUser register(@NotNull UserModel userModel) throws ResourceNotFoundException, ResourceAlreadyExistsException {
         Collection<Role> roles = new ArrayList<>();
+        Optional<Role> optionalRole;
         if(userModel.getRoles().isEmpty()) {
-            roles.add(roleRepository.findByName("ROLE_USER"));
+            optionalRole = roleRepository.findByName("ROLE_USER");
+            roles.add(optionalRole.get());
         }
         else{
             for (String role : userModel.getRoles()) {
-                roles.add(roleRepository.findByName(role));
+                optionalRole = roleRepository.findByName(role);
+                if(optionalRole.isEmpty()) throw new ResourceNotFoundException("No role " + role + "found");
+                roles.add(optionalRole.get());
             }
         }
+        String username = userModel.getUsername(), email = userModel.getEmail();
+        if(userRepository.findByUsername(username).isPresent() || userRepository.findByEmail(email).isPresent())
+            throw new ResourceAlreadyExistsException("Username or Email already signed up");
+
+
         AUser user = AUser.builder()
-                .username(userModel.getUsername())
+                .username(username)
                 .password(passwordEncoder.encode(userModel.getPassword()))
-                .email(userModel.getEmail())
+                .email(email)
                 .roles(roles)
                 .enabled(true)
                 .build();
@@ -54,20 +66,26 @@ public class UserService {
         return userRepository.findAll(PageRequest.of(page, size)).getContent();
     }
 
-    public void updateUserWithUsername(String username, UserModel userModel) {
-        AUser user = userRepository.findByUsername(username);
-        user.setEmail(userModel.getEmail());
-        user.setPassword(passwordEncoder.encode(userModel.getPassword()));
+    public void updateUserWithUsername(String username, UserModel userModel) throws ResourceNotFoundException {
+        Optional<Role> optionalRole;
+        Optional<AUser> optionalAUser = userRepository.findByUsername(username);
+        if(optionalAUser.isEmpty()) throw new ResourceNotFoundException("This user is not signed up");
+        AUser user = optionalAUser.get();
+        String email = userModel.getEmail();
+        if(!email.isEmpty()) user.setEmail(email);
+        String password = userModel.getPassword();
+        if(!password.isEmpty()) user.setPassword(passwordEncoder.encode(password));
         Collection<Role> roles = new ArrayList<>();
-        if(userModel.getRoles().isEmpty()) {roles.add(roleRepository.findByName("ROLE_USER"));}
-        else{
-            for (String role : userModel.getRoles()) {
-                roles.add(roleRepository.findByName(role));
-            }
+        for (String role : userModel.getRoles()) {
+            optionalRole = roleRepository.findByName(role);
+            if(optionalRole.isEmpty()) throw new ResourceNotFoundException("No role " + role + "found");
+            roles.add(optionalRole.get());
         }
         user.setRoles(roles);
+        userRepository.save(user);
+    }
 
-
-
+    public void deleteUserById(Long id) {
+        userRepository.deleteById(id);
     }
 }

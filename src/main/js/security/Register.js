@@ -18,15 +18,23 @@ export default function Register(props){
                 "Content-type" : "application/json; charset=UTF-8"
             }
         })
-            .then(() => {
-                    window.alert("Registration successful!\nRedirecting to login page...")
-                    const sleep = (delay) => new Promise((resolve) => setTimeout(resolve, delay))
-                    const delay = async () =>  {
-                        await sleep(5000)
-                    }
-                    delay().then()
+            .then(resp => {
+                switch (resp.status){
+                    case 409:
+                        return window.alert("Username or email already exist")
+                    case 200:
+                        window.alert("Registration successful!\nRedirecting to login page...")
+                        const sleep = (delay) => new Promise((resolve) => setTimeout(resolve, delay))
+                        const delay = async () =>  {
+                            await sleep(5000)
+                        }
+                        delay().then()
 
-                    window.location.href = "http://localhost:8080/login"
+                        window.location.href = "http://localhost:8080/login"
+                        return
+                    default:
+                        return window.alert("Unknown Server Error")
+                }
                 }
             )
     }

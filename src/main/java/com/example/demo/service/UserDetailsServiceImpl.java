@@ -3,6 +3,7 @@ package com.example.demo.service;
 import com.example.demo.entity.AUser;
 import com.example.demo.entity.Privilege;
 import com.example.demo.entity.Role;
+import com.example.demo.error.ResourceNotFoundException;
 import com.example.demo.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
@@ -16,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 
 import static org.assertj.core.util.Lists.newArrayList;
 
@@ -31,10 +33,11 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     }
 
     public UserDetails loadUserByUsername(String username) {
-        AUser user = userRepository.findByUsername(username);
-        if (user == null) {
-            throw new UsernameNotFoundException("Not found");
+        Optional<AUser> optionalAUser = userRepository.findByUsername(username);
+        if (optionalAUser.isEmpty()) {
+            throw new UsernameNotFoundException("No such User");
         }
+        AUser user = optionalAUser.get();
         boolean accountNotExpired = true;
         boolean credentialsNonExpired = true;
         boolean accountNonLocked = true;

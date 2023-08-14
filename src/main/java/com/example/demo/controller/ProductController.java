@@ -1,6 +1,7 @@
 package com.example.demo.controller;
 
 import com.example.demo.entity.Product;
+import com.example.demo.error.ResourceNotFoundException;
 import com.example.demo.model.ProductModel;
 import com.example.demo.service.ProductService;
 import lombok.extern.slf4j.Slf4j;
@@ -31,6 +32,7 @@ public class ProductController {
 
         return productService.getAllProducts().size();
     }
+
     @GetMapping("/read/{id}")
     public Product getProduct(@PathVariable Long id){
 
@@ -52,12 +54,11 @@ public class ProductController {
 
     @DeleteMapping("/delete/{id}")
     public void deleteProduct(@PathVariable Long id){
-
         productService.deleteProduct(id);
     }
-    @PutMapping("/update/{id}")
-    public void updateProduct(@PathVariable Long id, @RequestBody ProductModel productModel){
 
+    @PutMapping("/update/{id}")
+    public void updateProduct(@PathVariable Long id, @RequestBody ProductModel productModel) throws ResourceNotFoundException {
         productService.updateProduct(productModel, id);
     }
 

@@ -3,6 +3,8 @@ package com.example.demo.controller;
 import com.example.demo.entity.AUser;
 import com.example.demo.entity.Privilege;
 import com.example.demo.entity.Role;
+import com.example.demo.error.ResourceAlreadyExistsException;
+import com.example.demo.error.ResourceNotFoundException;
 import com.example.demo.model.RoleModel;
 import com.example.demo.model.UserModel;
 import com.example.demo.service.PrivilegeService;
@@ -30,9 +32,8 @@ public class RegistrationController {
     private PrivilegeService privilegeService;
 
     @PostMapping("/user/create")
-    public AUser newUser(@RequestBody UserModel userModel){
+    public AUser newUser(@RequestBody UserModel userModel) throws ResourceNotFoundException, ResourceAlreadyExistsException {
         return userService.register(userModel);
-
     }
 
     @GetMapping("/user/read/total")
@@ -41,7 +42,7 @@ public class RegistrationController {
     }
 
     @PutMapping("/user/update/{username}")
-    public void getPage(@PathVariable String username, @RequestBody UserModel userModel){
+    public void getPage(@PathVariable String username, @RequestBody UserModel userModel) throws ResourceNotFoundException {
         //log.info(productService.getAllProducts().toString());
         userService.updateUserWithUsername(username, userModel);
     }
@@ -57,13 +58,13 @@ public class RegistrationController {
         return roleService.getAllRoles();
     }
 
-    @GetMapping("/roles/read/{id}")
-    public Role getRoleById(@PathVariable Long id){
-        return roleService.getRoleById(id);
+    @GetMapping("/roles/read/{name}")
+    public Role getRoleByName(@PathVariable String name) throws ResourceNotFoundException {
+        return roleService.getRoleByName(name);
     }
 
     @PostMapping("/roles/create")
-    public void createRole(@RequestBody RoleModel roleModel){
+    public void createRole(@RequestBody RoleModel roleModel) throws ResourceAlreadyExistsException {
         roleService.createRole(roleModel);
     }
 
@@ -78,5 +79,14 @@ public class RegistrationController {
         return privilegeService.getAll();
     }
 
+    @DeleteMapping("/user/delete/{id}")
+    public void deleteUserById(@PathVariable Long id){
+        userService.deleteUserById(id);
+    }
+
+    @DeleteMapping("/roles/delete/{id}")
+    public void deleteRoleById(@PathVariable Long id){
+        roleService.deleteRoleById(id);
+    }
 
 }
